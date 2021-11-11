@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
+using ODataPrototype.Infrastructure;
 using ODataPrototype.Models;
 using System.Linq;
 
@@ -23,13 +24,13 @@ namespace ODataPrototype
 
         public void ConfigureServices(IServiceCollection services)
         {
-			services.AddControllers();
+            services.AddControllers();
             services.AddOData();
-			services.AddMvcCore()
+            services.AddMvcCore()
                 .AddNewtonsoftJson();
         }
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -40,38 +41,38 @@ namespace ODataPrototype
 
             app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapODataRoute("odata", "odata", a =>
                 {
                     a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(IEdmModel), sp => GetEmdModel());
-                   // a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataSerializerProvider), sp => new CustomODataSerializerProvider(sp));
+                    a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataSerializerProvider), sp => new CustomODataSerializerProvider(sp));
                 });
 
                 endpoints.EnableDependencyInjection();
-				endpoints
-					.Expand()
-					.Select()
-					.Count()
-					.OrderBy()
-					.Filter()
-					.SkipToken()
-					.MaxTop(100);
-				endpoints.MapControllers();
-			});
-		}
+                endpoints
+                    .Expand()
+                    .Select()
+                    .Count()
+                    .OrderBy()
+                    .Filter()
+                    .SkipToken()
+                    .MaxTop(100);
+                endpoints.MapControllers();
+            });
+        }
 
-		private static IEdmModel GetEmdModel()
-		{
-			var builder = new ODataConventionModelBuilder();
+        private static IEdmModel GetEmdModel()
+        {
+            var builder = new ODataConventionModelBuilder();
 
-			var customFormEntryReportsType = builder.EntitySet<Entry>("Entries")
-				.EntityType;
-			customFormEntryReportsType.HasKey(x => x.EntryId);
-			customFormEntryReportsType.Property(x => x.ExpirationDate).AsDate();
-			customFormEntryReportsType.Filter().Count().Expand(1).OrderBy().Page().Select();
+            var customFormEntryReportsType = builder.EntitySet<Entry>("Entries")
+                .EntityType;
+            customFormEntryReportsType.HasKey(x => x.EntryId);
+            customFormEntryReportsType.Property(x => x.ExpirationDate).AsDate();
+            customFormEntryReportsType.Filter().Count().Expand(1).OrderBy().Page().Select();
 
-			return builder.GetEdmModel();
-		}
-	}
+            return builder.GetEdmModel();
+        }
+    }
 }

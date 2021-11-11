@@ -93,6 +93,5 @@ namespace ODataPrototype.Controllers
 
             return list.AsQueryable();
         }
-
     }
 }
