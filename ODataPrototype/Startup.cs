@@ -26,7 +26,7 @@ namespace ODataPrototype
         {
             services.AddControllers();
             services.AddOData();
-            services.AddMvcCore()
+            services.AddMvcCore(o => o.OutputFormatters.Insert(0, new CustomODataOutputFormatter()))
                 .AddNewtonsoftJson();
         }
 
@@ -46,7 +46,6 @@ namespace ODataPrototype
                 endpoints.MapODataRoute("odata", "odata", a =>
                 {
                     a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(IEdmModel), sp => GetEmdModel());
-                    a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataSerializerProvider), sp => new CustomODataSerializerProvider(sp));
                 });
 
                 endpoints.EnableDependencyInjection();
