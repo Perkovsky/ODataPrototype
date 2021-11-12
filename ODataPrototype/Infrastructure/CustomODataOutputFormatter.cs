@@ -3,19 +3,17 @@ using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OData;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
 
 namespace ODataPrototype.Infrastructure
 {
     public class CustomODataOutputFormatter : ODataOutputFormatter
     {
-        private readonly JsonSerializer _serializer;
-
         public CustomODataOutputFormatter()
             : base(new[]
             { 
@@ -38,8 +36,6 @@ namespace ODataPrototype.Infrastructure
                 //ODataPayloadKind.Value,
             })
         {
-            _serializer = new JsonSerializer { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-
             SupportedMediaTypes.Add("application/json");
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.Unicode);
@@ -57,27 +53,41 @@ namespace ODataPrototype.Infrastructure
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            using (var writer = new StreamWriter(context.HttpContext.Response.Body))
+            var originalBody = context.HttpContext.Response.Body;
+
+            await using (var ms = new MemoryStream())
             {
-                //TODO: get finishing OData result
-                object data = new object();
+                context.HttpContext.Response.Body = ms;
+                await base.WriteResponseBodyAsync(context, selectedEncoding);
+                ms.Position = 0;
 
-                var mainResponseModel = new MainResponseModel
-                {
-                    AccessToken = "test-access-token-stub",
-                    Data = data
-                };
+                // prefix
+                var prefix = selectedEncoding.GetBytes(GetMainResponseModelPrefix());
+                await originalBody.WriteAsync(prefix, 0, prefix.Length);
+                
+                // OData final result
+                await ms.CopyToAsync(originalBody);
 
-                _serializer.Serialize(writer, mainResponseModel);
-                await writer.FlushAsync();
+                // suffix
+                var suffix = selectedEncoding.GetBytes("}");
+                await originalBody.WriteAsync(suffix, 0, suffix.Length);
             }
+
+            context.HttpContext.Response.Body = originalBody;
         }
 
-        //NOTE: if you uncomment, it doesn't work!
-        //
-        //public override void WriteResponseHeaders(OutputFormatterWriteContext context)
-        //{
-        //    WriteResponseHeaders(context);
-        //}
+        private static string GetMainResponseModelPrefix()
+        {
+            var mainResponseModelWithoutData = new MainResponseModel
+            {
+                AccessToken = "test-access-token-stub",
+                Data = null
+            };
+
+            var jsonSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            var strMainResponseModelWithoutData = JsonConvert.SerializeObject(mainResponseModelWithoutData, jsonSettings);
+            var result = strMainResponseModelWithoutData.Replace("null}", string.Empty);
+            return result;
+        }
     }
 }
