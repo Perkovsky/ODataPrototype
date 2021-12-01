@@ -9,9 +9,10 @@ namespace ODataPrototype.Models
 		public string Building { get; set; }
 		public string Unit { get; set; }
 		public DateTime? ExpirationDate { get; set; }
-
-		public IDictionary<string, object> EntryFields { get; set; }
-
+        public TenantInfo TenantInfo { get; set; }
+		
 		public IEnumerable<EntryTenantAccess> TenantAccesses { get; set; }
+
+        public IDictionary<string, object> EntryFields { get; set; }
 	}
 }

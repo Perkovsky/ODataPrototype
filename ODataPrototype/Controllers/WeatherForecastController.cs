@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace ODataPrototype.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -24,6 +25,7 @@ namespace ODataPrototype.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

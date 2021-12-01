@@ -8,9 +8,11 @@ using System.Linq;
 namespace ODataPrototype.Controllers
 {
     [Route("odata")]
+    [ApiVersion("1.0")]
     public class TestODataController : ODataController
     {
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [EnableQuery]
         public IQueryable<Entry> Get()
         {
@@ -22,6 +24,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #1",
                     ExpirationDate = DateTime.Now.AddDays(1),
+                    TenantInfo = new TenantInfo { Name = "Ivan", Age = 22, CellPhone = "929-444-22-55" },
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-1" },
@@ -41,6 +44,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #2",
                     ExpirationDate = DateTime.Now.AddDays(2),
+                    TenantInfo = new TenantInfo { Name = "Oleg", Age = 44, CellPhone = "929-33-11-53" },
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-2" },
@@ -58,6 +62,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #3",
                     ExpirationDate = DateTime.Now.AddDays(2),
+                    TenantInfo = new TenantInfo { Name = "Ivan", Age = 28, CellPhone = "929-424-62-75" },
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-3" },
@@ -76,6 +81,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #4",
                     ExpirationDate = DateTime.Now.AddDays(5),
+                    TenantInfo = new TenantInfo { Name = "Andrew", Age = 18, CellPhone = "929-567-32-24" },
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-4" },

@@ -1,13 +1,12 @@
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
-using ODataPrototype.Infrastructure;
 using ODataPrototype.Models;
 using System.Linq;
 
@@ -24,9 +23,17 @@ namespace ODataPrototype
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+
             services.AddControllers();
-            services.AddOData();
-            services.AddMvcCore(o => o.OutputFormatters.Insert(0, new CustomODataOutputFormatter()))
+            services.AddOData()
+                .EnableApiVersioning();
+            services.AddMvcCore()
                 .AddNewtonsoftJson();
         }
 
@@ -65,11 +72,8 @@ namespace ODataPrototype
         {
             var builder = new ODataConventionModelBuilder();
 
-            var customFormEntryReportsType = builder.EntitySet<Entry>("Entries")
-                .EntityType;
-            customFormEntryReportsType.HasKey(x => x.EntryId);
-            customFormEntryReportsType.Property(x => x.ExpirationDate).AsDate();
-            customFormEntryReportsType.Filter().Count().Expand(1).OrderBy().Page().Select();
+            builder.EntitySet<Entry>("Entries").EntityType
+                .HasKey(x => x.EntryId).Filter().Count().Expand(1).OrderBy().Page().Select();
 
             return builder.GetEdmModel();
         }
