@@ -3,6 +3,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,8 +32,12 @@ namespace ODataPrototype
             });
 
             services.AddControllers();
+            
             services.AddOData()
                 .EnableApiVersioning();
+
+            services.AddDbContext<DataBaseContext>(x => x.UseInMemoryDatabase("Test").EnableSensitiveDataLogging());
+
             services.AddMvcCore()
                 .AddNewtonsoftJson();
         }
@@ -74,6 +79,10 @@ namespace ODataPrototype
 
             builder.EntitySet<Entry>("Entries").EntityType
                 .HasKey(x => x.EntryId).Filter().Count().Expand(1).OrderBy().Page().Select();
+
+            builder.EntitySet<Tenant>("Tenants");
+            builder.EntitySet<Unit>("Units");
+            builder.EntitySet<User>("Users");
 
             return builder.GetEdmModel();
         }

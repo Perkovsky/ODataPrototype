@@ -11,10 +11,18 @@ namespace ODataPrototype.Controllers
     [ApiVersion("1.0")]
     public class TestODataController : ODataController
     {
-        [HttpGet]
+        private readonly DataBaseContext _db;
+
+        public TestODataController(DataBaseContext db)
+        {
+            _db = db;
+            _db.Database.EnsureCreated();
+        }
+
+        [HttpGet("entries")]
         [MapToApiVersion("1.0")]
         [EnableQuery]
-        public IQueryable<Entry> Get()
+        public IQueryable<Entry> GetEntries()
         {
             var list = new List<Entry>
             {
@@ -98,6 +106,27 @@ namespace ODataPrototype.Controllers
             };
 
             return list.AsQueryable();
+        }
+
+        [HttpGet("tenants")]
+        [EnableQuery]
+        public IQueryable<Tenant> GetTenants()
+        {
+            return _db.Tenants;
+        }
+
+        [HttpGet("units")]
+        [EnableQuery]
+        public IQueryable<Unit> GetUnits()
+        {
+            return _db.Units;
+        }
+
+        [HttpGet("users")]
+        [EnableQuery]
+        public IQueryable<User> GetUsers()
+        {
+            return _db.Users;
         }
     }
 }
