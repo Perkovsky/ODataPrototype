@@ -9,6 +9,7 @@ namespace ODataPrototype.Models
 		public string Building { get; set; }
 		public string Unit { get; set; }
 		public DateTime? ExpirationDate { get; set; }
+		public TimeSpan? ExpirationTime { get; set; }
 
 		public IDictionary<string, object> EntryFields { get; set; }
 

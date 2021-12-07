@@ -22,6 +22,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #1",
                     ExpirationDate = DateTime.Now.AddDays(1),
+                    ExpirationTime = DateTime.Now.AddDays(1).TimeOfDay,
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-1" },
@@ -41,6 +42,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #2",
                     ExpirationDate = DateTime.Now.AddDays(2),
+                    ExpirationTime = DateTime.Now.AddDays(2).TimeOfDay,
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-2" },
@@ -58,6 +60,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #3",
                     ExpirationDate = DateTime.Now.AddDays(2),
+                    ExpirationTime = DateTime.Now.AddDays(2).TimeOfDay,
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-3" },
@@ -76,6 +79,7 @@ namespace ODataPrototype.Controllers
                     Building = "Building #1",
                     Unit = "Unit #4",
                     ExpirationDate = DateTime.Now.AddDays(5),
+                    ExpirationTime = DateTime.Now.AddDays(5).TimeOfDay,
                     EntryFields = new Dictionary<string, object>
                     {
                         { "field_467", "field has ID = 467-4" },

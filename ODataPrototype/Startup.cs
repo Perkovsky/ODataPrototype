@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 using ODataPrototype.Infrastructure;
 using ODataPrototype.Models;
@@ -46,7 +47,8 @@ namespace ODataPrototype
                 endpoints.MapODataRoute("odata", "odata", a =>
                 {
                     a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(IEdmModel), sp => GetEmdModel());
-                    a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataSerializerProvider), sp => new CustomODataSerializerProvider(sp));
+                    //a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataSerializerProvider), sp => new CustomODataSerializerProvider(sp));
+                    a.AddService(Microsoft.OData.ServiceLifetime.Singleton, typeof(ODataPayloadValueConverter), sp => new CustomODataPayloadValueConverter());
                 });
 
                 endpoints.EnableDependencyInjection();
@@ -70,6 +72,10 @@ namespace ODataPrototype
                 .EntityType;
             customFormEntryReportsType.HasKey(x => x.EntryId);
             customFormEntryReportsType.Property(x => x.ExpirationDate).AsDate();
+
+            //NOTE: don't use this definition below, use CustomODataPayloadValueConverter instead
+            //customFormEntryReportsType.Property(x => x.ExpirationTime).AsTimeOfDay();
+
             customFormEntryReportsType.Filter().Count().Expand(1).OrderBy().Page().Select();
 
             return builder.GetEdmModel();
